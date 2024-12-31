@@ -1,0 +1,42 @@
+bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install
+
+config='{
+  "log": {
+    "access": "/var/log/xray/access.log",
+    "error": "/var/log/xray/error.log",
+    "loglevel": "warning"
+  },
+  "inbounds": [
+    {
+      "port": 80,
+      "protocol": "http",
+      "settings": {
+        "auth": "basic",
+        "accounts": [
+          {
+            "user": "admin",
+            "pass": "password"
+          }
+        ]
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "settings": {}
+    }
+  ]
+}'
+
+# Write configuration to file
+echo "$config" > /usr/local/etc/xray/config.json
+
+# Check if the write was successful
+if [ $? -eq 0 ]; then
+  echo "Configuration file written successfully!"
+else
+  echo "Failed to write configuration file!"
+fi
+
+systemctl restart xray
